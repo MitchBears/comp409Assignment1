@@ -36,7 +36,7 @@ public class q1 {
             //reset occurs at the beginning of every iteration of circle drawing, in order to refresh the image.
 
             // YOU NEED TO ADD CODE HERE AT LEAST!
-            Drawing drawing = new Drawing(img, width, height);
+            Drawing drawing = new Drawing(width, height);
             long average = 0;
             long start = 0;
             long end = 0;

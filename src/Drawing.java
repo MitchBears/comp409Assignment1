@@ -4,48 +4,39 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Drawing {
 
-    BufferedImage img;
     volatile Circle circleOne;
     volatile Circle circleTwo;
     int width;
     int height;
     public int pixels [][];
-    AtomicBoolean permissions[];
+    AtomicBoolean flags[];
+    volatile int turn = 0;
 
-    Drawing(BufferedImage newImg, int newWidth, int newHeight) {
-        permissions = new AtomicBoolean[2];
-        permissions[0] = new AtomicBoolean(false);
-        permissions[1] = new AtomicBoolean(false);
-        img = newImg;
+    Drawing(int newWidth, int newHeight) {
+        flags = new AtomicBoolean[2];
+        flags[0] = new AtomicBoolean(false);
+        flags[1] = new AtomicBoolean(false);
         width = newWidth;
         height = newHeight;
         pixels = new int[height][width];
     }
 
-    public synchronized void addCircleOne(Circle newCircleOne) {
+    public void addCircleOne(Circle newCircleOne) {
         circleOne = newCircleOne;
-        while(!obtainPermission(0));
+        flags[0].set(true);
+        turn = 0;
+        while(turn == 0 && flags[1].get());
         draw(circleOne);
-        release(0);
+        flags[0].set(false);
     }
 
-    public synchronized void addCircleTwo(Circle newCircleTwo) {
+    public void addCircleTwo(Circle newCircleTwo) {
         circleTwo = newCircleTwo;
-        while(!obtainPermission(1));
+        flags[1].set(true);
+        turn = 1;
+        while(turn == 1 && flags[0].get());
         draw(circleTwo);
-        release(1);
-    }
-
-    public synchronized boolean obtainPermission(int index) {
-        if (permissions[Math.abs(index - 1)].get() && intersect(circleOne, circleTwo)) {
-            return false;
-        }
-        permissions[index].set(true);
-        return true;
-    }
-
-    public void release(int index) {
-        permissions[index].set(false);
+        flags[1].set(false);
     }
 
     public boolean intersect(Circle circleOne, Circle circleTwo) {
