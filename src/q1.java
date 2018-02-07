@@ -15,10 +15,8 @@ public class q1 {
     public static int height = 1080;
 
     public static int r;
-    public static volatile int c;
+    public static int c;
     public static boolean multithreaded;
-
-    public static volatile int circlesDrawn = 0;
 
     public static void main(String[] args) {
         try {
