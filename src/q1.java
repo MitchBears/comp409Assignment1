@@ -2,6 +2,7 @@ import java.awt.image.*;
 import java.io.*;
 import javax.imageio.*;
 import java.awt.Color;
+import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.*;
 
@@ -32,15 +33,19 @@ public class q1 {
             // create an image and initialize it to all 0's
             img = new BufferedImage(width,height,BufferedImage.TYPE_INT_ARGB);
             //reset occurs at the beginning of every iteration of circle drawing, in order to refresh the image.
+            for (int i=0;i<width;i++) {
+                for (int j=0;j<height;j++) {
+                    img.setRGB(i,j,0);
+                }
+            }
 
             // YOU NEED TO ADD CODE HERE AT LEAST!
             Drawing drawing = new Drawing(width, height);
             long average = 0;
-            long start = 0;
-            long end = 0;
-            long timeElapsed = 0;
-            for(int i = 0; i < 7; i++) {
-                reset();
+            long start;
+            long end;
+            long timeElapsed;
+            for(int i = 0; i < 6; i++) {
                 if (multithreaded) {
                     KeepCount count = new KeepCount(c);
                     Thread one = generateThread(1, count, drawing);
@@ -79,7 +84,7 @@ public class q1 {
             }
             System.out.println("Done");
 
-            average = average/6;
+            average = average/5;
 
             if (multithreaded) {
                 System.out.println("Multithreaded execution average for r: " + r + " c: " + c);
@@ -112,22 +117,19 @@ public class q1 {
     }
 
     public static void reset() {
-        for (int i=0;i<width;i++) {
-            for (int j=0;j<height;j++) {
-                img.setRGB(i,j,0);
-            }
-        }
+
     }
 
     public static Thread generateThread(int threadNumber, KeepCount count, Drawing drawing) {
         return new Thread(new Runnable() {
             @Override
             public void run() {
+                Random random = new Random();
                 while(count.takeOne()) {
-                    int centerX = ThreadLocalRandom.current().nextInt(0, width);
-                    int centerY = ThreadLocalRandom.current().nextInt(0, height);
-                    int radius = ThreadLocalRandom.current().nextInt(1, r);
-                    Color currentColor = new Color(ThreadLocalRandom.current().nextInt(0, 255), ThreadLocalRandom.current().nextInt(0, 255), ThreadLocalRandom.current().nextInt(0, 255));
+                    int centerX = random.nextInt(width);
+                    int centerY = random.nextInt(height);
+                    int radius = random.nextInt(r);
+                    Color currentColor = new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256));
                     Circle newCircle = new Circle(radius, centerX, centerY, currentColor);
                     if (threadNumber == 1) {
                         drawing.addCircleOne(newCircle);
@@ -141,11 +143,12 @@ public class q1 {
     }
 
     public static void singleThreadedDraw(Drawing drawing) {
+        Random random = new Random();
         for (int i = 0; i < c; i++) {
-            int centerX = ThreadLocalRandom.current().nextInt(0, width);
-            int centerY = ThreadLocalRandom.current().nextInt(0, height);
-            int radius = ThreadLocalRandom.current().nextInt(1, r);
-            Color currentColor = new Color(ThreadLocalRandom.current().nextInt(0, 255), ThreadLocalRandom.current().nextInt(0, 255), ThreadLocalRandom.current().nextInt(0, 255));
+            int centerX = random.nextInt(width);
+            int centerY = random.nextInt(height);
+            int radius = random.nextInt(r);
+            Color currentColor = new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256));
             Circle newCircle = new Circle(radius, centerX, centerY, currentColor);
             drawing.draw(newCircle);
         }

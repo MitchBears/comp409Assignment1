@@ -4,8 +4,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Drawing {
 
-    volatile Circle circleOne;
-    volatile Circle circleTwo;
+    Circle circleOne;
+    Circle circleTwo;
     int width;
     int height;
     public int pixels [][];
@@ -25,16 +25,18 @@ public class Drawing {
         circleOne = newCircleOne;
         flags[0].set(true);
         turn = 0;
-        while(turn == 0 && flags[1].get());
+        while(turn == 0 && flags[1].get() && intersect(circleOne, circleTwo));
         draw(circleOne);
         flags[0].set(false);
     }
 
     public void addCircleTwo(Circle newCircleTwo) {
         circleTwo = newCircleTwo;
+        //Modified Peterson's to include whether or not the two circles are intersecting
         flags[1].set(true);
         turn = 1;
-        while(turn == 1 && flags[0].get());
+        while(turn == 1 && flags[0].get() && intersect(circleOne, circleTwo));
+        //critical section
         draw(circleTwo);
         flags[1].set(false);
     }

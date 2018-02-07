@@ -2,14 +2,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class KeepCount {
 
-    AtomicInteger count;
+    private int count;
 
     KeepCount(int limit) {
-        count = new AtomicInteger(limit);
+        count = limit;
     }
 
     public synchronized boolean takeOne() {
-        if(count.getAndDecrement() >= 1) {
+        if(count >= 0) {
+            count--;
             return true;
         }
         return false;
